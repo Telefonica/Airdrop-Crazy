@@ -1,0 +1,46 @@
+# Run docker-compose build
+# Run docker-compose up
+# Live long and prosper
+
+version: '3'
+
+services:
+
+  flask_airdrop:
+    container_name: flask_airdrop
+    restart: always
+    image: flask
+    ports:
+      # - "80:80"
+      # - "443:443"
+      - "5000:5000"
+    build: ./airdrop-api
+    volumes:
+       - /var/log:/var/log
+    depends_on:
+      - db_sql
+    networks:
+      - mynet
+  
+  db_sql:
+    image: mysql:5.7
+    container_name: db_sql
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - my-db:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: airdrop-pro
+      MYSQL_USER: airdrop
+      MYSQL_PASSWORD: pj34kls
+      MYSQL_ROOT_PASSWORD: pj34kls
+    networks:
+      - mynet
+    
+
+networks:
+  mynet:
+
+volumes:
+  my-db:

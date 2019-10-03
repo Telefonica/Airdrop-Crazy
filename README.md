@@ -1,8 +1,5 @@
 # Apple bleee
 
-<p align="center">
-  <img src="https://github.com/hexway/apple_bleee/blob/master/img/logo.jpg"  height="350">
-</p>
 
 ## Disclaimer
 These scripts are experimental PoCs that show what an attacker get from Apple devices if they sniff Bluetooth traffic.
@@ -11,20 +8,20 @@ These scripts are experimental PoCs that show what an attacker get from Apple de
 
 
 ## Requirements
-To use these scripts you will need a Bluetooth adapter for sending `BLE` messages and WiFi card supporting active monitor mode with frame injection for communication using `AWDL` (AirDrop). We recommend the Atheros AR9280 chip (IEEE 802.11n) we used to develop and test this code.
+To use these scripts you will need a Bluetooth adapter for sending `BLE` messages and WiFi card supporting active monitor mode with frame injection for communication using `AWDL` (AirDrop). **We recommend the Atheros AR9280** chip (IEEE 802.11n) we used to develop and test this code.
 We have tested these PoCs on **Kali Linux**
 
+## Requirements (Lucas)
+I have adapted those scripts deleting all the function that was not available and refactoring the scripts in order to use a more Pythonic and modern way to organize the code. Please read carefully the [OWL](https://github.com/seemoo-lab/owl) and [Opendrop](https://github.com/seemoo-lab/opendrop) documentation in order to understand what's going on underneath these scripts.
+Also, you need for the airdrop part an **Active Monitor Network Card** as the Authors said, the **Atheros AR9280** should work but you can use the **TP-LINK Archer T2U/T1U** if you want a usb card.
 
 ## Installation
 
 ```
 # clone main repo
 git clone https://github.com/hexway/apple_bleee.git && cd ./apple_bleee
-# install dependencies
-sudo apt update && sudo apt install -y bluez libpcap-dev libev-dev libnl-3-dev libnl-genl-3-dev libnl-route-3-dev cmake libbluetooth-dev
-sudo pip3 install -r requirements.txt
-# clone and install owl for AWDL interface
-git clone https://github.com/seemoo-lab/owl.git && cd ./owl && git submodule update --init && mkdir build && cd build && cmake .. && make && sudo make install && cd ../..
+cd apple_ble
+sudo ./install.sh
 ```
 
 ## How to use
@@ -38,7 +35,7 @@ Devices:
 ```
 
 
-### Script: [ble_read_state.py](https://github.com/hexway/apple_bleee/blob/master/ble_read_state.py)
+### Script: ble_read_script.py
 
 This script sniffs `BLE` traffic and displays status messages from Apple devices.
 Moreover, the tool detects requests for password sharing from Apple devices. In these packets, we can get first 3 bytes of sha256(phone_number) and could try to guess the original phone number using prepared tables with phone hash values.
@@ -47,21 +44,21 @@ Moreover, the tool detects requests for password sharing from Apple devices. In 
 
 ```bash
 python3 ble_read_state.py -h
-usage: ble_read_state.py [-h] [-c] [-n] [-r] [-l] [-s] [-m] [-a] [-t TTL]
+usage: ble_read_state.py [-h] [-t TTL] [-b BLE_IFACE] [-w W_IFACE] [-s] [-a]
 
 Apple bleee. Apple device sniffer
 ---chipik
 
 optional arguments:
-  -h, --help          show this help message and exit
-  -c, --check_hash    Get phone number by hash
-  -n, --check_phone   Get user info by phone number (TrueCaller/etc)
-  -r, --check_region  Get phone number region info
-  -l, --check_hlr     Get phone number info by HLR request (hlrlookup.com)
-  -s, --ssid          Get SSID from requests
-  -m, --message       Send iMessage to the victim
-  -a, --airdrop       Get info from AWDL
-  -t TTL, --ttl TTL   ttl
+  -h, --help            show this help message and exit
+  -t TTL, --ttl TTL     Time To Live
+  -b BLE_IFACE, --ble_iface BLE_IFACE
+                        Bluetooth inteface
+  -w W_IFACE, --w_iface W_IFACE
+                        Wireless Interface
+  -s, --ssid            Get SSID from request
+  -a, --airdrop         Get info from AWDL airdrop
+
 ```
 
 For monitoring you can just run the script without any parameters
@@ -72,40 +69,32 @@ sudo python3 ble_read_state.py
 
 press `Ctrl+q` to exit
 
-If you want to get phone numbers from a WiFi password request, you have to prepare the hashtable (please find scripts below), setup a web server and specify `base_url` inside this script and run it with  `-c` parameter
 
-```bash
-sudo python3 ble_read_state.py -с
-```
 
-**Video demo (click):**
-
-[![airdrop_demo](img/status_gif.gif)](https://www.youtube.com/watch?v=Bi602yAIBAw)
-
-### Script: [airdrop_leak.py](https://github.com/hexway/apple_bleee/blob/master/airdrop_leak.py)
+### Script: airdrop_leak.py
 
 This script allows to get mobile phone number of any user who will try to send file via AirDrop
 
-For this script, we'll need `AWDL` interface:
-```bash
-# set wifi card to monitor mode and run owl
-sudo iwconfig wlan0 mode monitor && sudo ip link set wlan0 up && sudo owl -i wlan0 -N &
-```
+For this script, we'll need `AWDL` interface. **Never use owl with the -N flag as it could lead into problems, always check if you have active monitor mode**
 
 Now, you can run the script
 
 ```bash
 python3 airdrop_leak.py -h
-usage: airdrop_leak.py [-h] [-c] [-n] [-m]
+usage: airdrop_leak.py [-h] [-n NAME] [-i IFACE] [-p PHONE] [-m MAIL]
 
-Apple AirDrop phone number catcher
----chipik
+    AirPods advertise spoofing PoC
+    ---chipik
+    
 
 optional arguments:
-  -h, --help         show this help message and exit
-  -c, --check_hash   Get phone number by hash
-  -n, --check_phone  Get user info by phone number (TrueCaller/etc)
-  -m, --message      Send iMessage to the victim
+  -h, --help            show this help message and exit
+  -n NAME, --name NAME  Name of the interface
+  -i IFACE, --iface IFACE
+                        Wireless inteface
+  -p PHONE, --phone PHONE
+                        phone
+  -m MAIL, --mail MAIL  mail
 ```
 
 With no params, the script just displays phone hash and ipv6 address of the sender
@@ -114,11 +103,8 @@ With no params, the script just displays phone hash and ipv6 address of the send
 sudo python3 airdrop_leak.py
 ```
 
-**Video demo (click):**
+### Script: adv_wifi.py
 
-[![airdrop_demo](img/airdrop_gif.gif)](https://www.youtube.com/watch?v=mREIeH_s3z8)
-
-### Script: [adv_wifi.py](https://github.com/hexway/apple_bleee/blob/master/adv_wifi.py)
 
 This script sends `BLE` messages with WiFi password sharing request. This PoC shows that an attacker can trigger a pop up message on the target device if he/she knows any phone/email that exists on the victim's device
 
@@ -149,26 +135,25 @@ For a WiFi password request, we'll need to specify any contact (email/phone) tha
 sudo python3 adv_wifi.py -e pr@hexway.io -s hexway
 ```
 
-**Video demo (click):**
-
-[![share_wifi_demo](img/share_wifi_pwd2_gif.gif)](https://www.youtube.com/watch?v=QkGCP2mfbJ8)
-
-### Script: [adv_airpods.py](https://github.com/hexway/apple_bleee/blob/master/adv_airpods.py)
+### Script: adv_airpods.py
 
 This script mimics AirPods by sending `BLE` messages
 
 ```bash
 python3 adv_airpods.py -h
-usage: adv_airpods.py [-h] [-i INTERVAL] [-r]
+usage: adv_airpods.py [-h] [-i INTERVAL] [-r] [-b BLE_IFACE]
 
-AirPods advertise spoofing PoC
----chipik
+    AirPods advertise spoofing PoC
+    ---chipik
+    
 
 optional arguments:
   -h, --help            show this help message and exit
   -i INTERVAL, --interval INTERVAL
                         Advertising interval
   -r, --random          Send random charge values
+  -b BLE_IFACE, --ble_iface BLE_IFACE
+                        Bluetooth inteface
 ```
 
 Let's send `BLE` messages with random charge values for headphones
@@ -177,16 +162,14 @@ Let's send `BLE` messages with random charge values for headphones
 sudo python3 adv_airpods.py -r
 ```
 
-**Video demo (click):**
 
-[![airdrop_demo](img/airpods_gif.gif)](https://www.youtube.com/watch?v=HoSuLUtrkXo)
 
-### Script: [hash2phone](https://github.com/hexway/apple_bleee/blob/master/hash2phone/)
+### Api phone
 
-You can use this script to create pre-calculated table with mobile phone numbers hashes<br>
-Please find details [here](/hash2phone)
+This service allows to build a service to request the hashed phones, just update the generate_number/generate_hashes functions in views.py to adapt to your phone number requirements.
 
 ## Contacts
 
 [https://hexway.io](https://hexway.io)<br>
 [@_hexway](https://twitter.com/_hexway)
+[Lucas Fernandez](https://twitter.com/lucferbux)

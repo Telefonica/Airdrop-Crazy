@@ -1,0 +1,6 @@
+flask
+flask-sqlalchemy
+mysqlclient
+gunicorn
+flask-cors
+flask_jwt_extended
