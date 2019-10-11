@@ -22,11 +22,15 @@ phone_states = {'0b': 'Home screen',
                 '1e': 'Calling',
                 '5e': 'Calling',
                 '4e':'Outgoing call',
-                '4b': 'Home screen/Airdrop',
-                '5b': 'Home screen/Airdrop',
+                '4b': 'Home screen',
+                '5b': 'Home screen',
                 '5a': 'Off',
                 '5e':'Incoming call',
                 }
+
+
+airdrop_state_on = ['4b', '5b']
+
 
 
 

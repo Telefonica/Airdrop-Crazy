@@ -6,7 +6,7 @@ import re
 import os
 from threading import Thread, Timer
 from utils.opendrop.base import AirDropBase
-from utildata.apple_ble_states import phone_states, airpods_states, devices_models, ble_packets_types, dev_types, dev_sig
+from utildata.apple_ble_states import phone_states, airdrop_state_on, airpods_states, devices_models, ble_packets_types, dev_types, dev_sig
 from utils.bluetooth_utils import (toggle_device, enable_le_scan, parse_le_advertising_events, disable_le_scan,
                                    raw_packet_to_str, start_le_advertising, stop_le_advertising)
 
@@ -16,15 +16,13 @@ apple_company_id = 'ff4c00'
 
 class Ble_Apple_Utils(object):
 
-
-
-
-    def __init__(self, ssid, airdrop, ttl, iwdev, dev_id):
+    def __init__(self, ssid, airdrop, ttl, iwdev, dev_id, debug):
         
         self.iwdev = iwdev
         self.airdrop = airdrop
         self.ssid = ssid
         self.dev_id = dev_id  # the bluetooth device is hci0
+        self.debug = debug
         self.sock = 0
         self.ttl = ttl
         self.airdropbase = None
@@ -79,9 +77,6 @@ class Ble_Apple_Utils(object):
                 self.parse_airpods(mac, packet[ble_packets_types['airpods']])
             if ble_packets_types['airdrop'] in packet.keys():
                 self.parse_airdrop_r(mac, packet[ble_packets_types['airdrop']])
-
-
-
 
     def parse_ble_packet(self, data):
         parsed_data = {}
@@ -196,9 +191,6 @@ class Ble_Apple_Utils(object):
             stop_le_advertising(sock)
 
 
-    
-
-
     # ---------------------- Packet parser ------------------------------------
 
 
@@ -206,22 +198,37 @@ class Ble_Apple_Utils(object):
         # 0        1        2                                 5
         # +--------+--------+--------------------------------+
         # |        |        |                                |
-        # | status | wifi   |           other                |
+        # | status |airdrop |           other                |
         # |        |        |                                |
         # +--------+--------+--------------------------------+
-        nearby = {'status': 1, 'wifi': 1, 'other': 999}
+        nearby = {'status': 1, 'airdrop': 1, 'other': 999}
+
+        #{'status': '01', 'airdrop': '98', 'other': '2ac6ce'}
         result = self.parse_struct(data, nearby)
         dev_val = next((value for key, value in dev_sig.items() if key.lower() in header), "<unkown>")
         state = phone_states.get(result['status'], '<unknown>')
-        os_state, wifi_state, dev_val = self.parse_os_wifi_code(result['wifi'], dev_val)
+
+        os_state, dev_val = self.get_operative_system(result['airdrop'], dev_val)
+
+        airdrop_state = self.get_airdrop_state(result['status'])
         
 
-        if os_state == 'WatchOS':
+        if(os_state == 'WatchOS'):
             dev_val = 'Watch'
+            airdrop_state = '-'
+            state = '-'
+        
+        if(dev_val == 'Homepod'):
+            state = '-'
+            airdrop_state = '-'
 
+
+        if(dev_val == 'iPhone/iPad'):
+            dev_val = self.refinment_ios_devices(result['status'], dev_val)
+        
         if mac in self.resolved_macs or mac in self.resolved_devs:
             self.phones[mac]['state'] = state
-            self.phones[mac]['wifi'] = wifi_state
+            self.phones[mac]['airdrop'] = airdrop_state
             self.phones[mac]['os'] = os_state
             self.phones[mac]['time'] = int(time.time())
             self.phones[mac]['device'] = dev_val
@@ -230,43 +237,76 @@ class Ble_Apple_Utils(object):
             self.phones[mac]['data'] = data
 
         else:
-            self.phones[mac] = {'state': "<unkown>", 'device': "<unkown>", 'wifi': "<unkown>", 'os': "<unkown>", 'rssi': "<unkown>", 'phone': '', 'time': int(time.time())}
+            self.phones[mac] = {'state': "<unkown>", 'device': "<unkown>", 'airdrop': "<unkown>", 'os': "<unkown>", 'rssi': "<unkown>", 'phone': '', 'time': int(time.time())}
             self.phones[mac]['device'] = dev_val
             self.resolved_macs.append(mac)
 
+    def get_airdrop_state(self, result):
+        if(result in airdrop_state_on):
+            return "On"
+        else:
+            return "Off"
 
-    def parse_os_wifi_code(self, code, dev):
+    def refinment_ios_devices(self, status, device):
+        """Refinment to get wether the ios device is iPhone or ipad
+        
+        Args:
+            status (str): airdrop status
+            device (str): Device
+        
+        Returns:
+            str: Device to get
+        """
+        ipad = ["47", "4b", "03", "0b", "07"]
+        iphone = ["1a", "5b", "5a", "1b"]
+        if(status in iphone):
+            return "iPhone"
+        elif(status in ipad):
+            return "iPad"
+        else:
+            return "iPhone/iPad"
+
+    def get_operative_system(self, airdrop_code, dev):
+        """Parse the struct of the airdrop to get the status
+        
+        Args:
+            airdrop_code (str): airdrop Code
+            dev (str): Device
+        
+        Returns:
+            (os, airdrop, device): Tuple with the info about the os, aidrop and device
+        """
         codes = {
-            "10": ('iOS11', '<unknown>', dev),
-            "le": ('iOS13', 'On', dev),
-            "la": ('iOS13', 'Off', dev),
-            "0e": ('iOS13', 'Connecting', dev),
-            "1e": ('iOS13', 'On', dev),
-            "04": ('iOS13', 'On', dev),
-            "1f": ('iOS13', 'On', dev),
-            "1a": ('iOS13', 'Off', dev),
-            "0c": ('iOS12', 'On', dev),
-            "00": ('iOS10', '<unknown>', dev),
-            "09": ('macOS', '<unknown>', dev),
-            "14": ('macOS', 'On', dev),
-            "98": ('WatchOS', '<unknown>', dev)
+            "10": ('iOS11', dev),
+            "le": ('iOS13', dev),
+            "la": ('iOS13', dev),
+            "0e": ('iOS13', dev),
+            "1e": ('iOS13', dev),
+            "04": ('iOS13', dev),
+            "1f": ('iOS13', dev),
+            "1a": ('iOS13', dev),
+            "0c": ('iOS13', dev),
+            "00": ('iOS10', dev),
+            "09": ('macOS', dev),
+            "14": ('macOS', dev),
+            "98": ('WatchOS', dev)
         }
         
-        if code == '1c':
+        if airdrop_code == '1c':
             if dev == 'MacBook':
-                return ('macOS', 'On', dev)
+                return ('macOS', dev)
             else:
-                return ('iOS13', 'On', dev)
-        if code == '18':
+                return ('iOS13', dev)
+        if airdrop_code == '18':
             if dev == 'MacBook':
-                return ('macOS', 'Off', dev)
+                return ('macOS', dev)
             else:
-                return ('iOS13', 'Off', dev)
-        if code == '14':
+                return ('iOS13', dev)
+        if airdrop_code == '14':
             if dev == 'iPhone/iPad':
-                return ('iOS', 'On', 'Homepod')
+                return ('iOS', 'Homepod')
         else:
-            return codes.get(code, (f'<error({code})>', f'<error({code})>', f'<error({code})>'))
+            return codes.get(airdrop_code, (f'<error({airdrop_code})>', f'<error({airdrop_code})>'))
 
 
 
@@ -301,7 +341,7 @@ class Ble_Apple_Utils(object):
         if mac in self.resolved_macs or mac in self.resolved_devs:
             self.phones[mac]['state'] = 'WiFi screen'
         else:
-            self.phones[mac] = {'state': unkn, 'device': unkn, 'wifi': unkn, 'os': unkn, 'phone': '', 'time': int(time.time())}
+            self.phones[mac] = {'state': unkn, 'device': unkn, 'airdrop': unkn, 'os': unkn, 'phone': '', 'time': int(time.time())}
             self.resolved_macs.append(mac)
 
 
@@ -343,7 +383,7 @@ class Ble_Apple_Utils(object):
                 #                 'appleID_hash': result['appleID_hash'], 'SSID_hash': result['ssid_hash'],
                 #                 'phone_info': phone_number_info}
             else:
-                self.phones[mac] = {'state': unkn, 'device': unkn, 'wifi': unkn, 'os': unkn, 'phone': '',
+                self.phones[mac] = {'state': unkn, 'device': unkn, 'airdrop': unkn, 'os': unkn, 'phone': '',
                             'time': int(time.time())}
                 self.resolved_macs.append(mac)
                 self.phones[mac]['time'] = int(time.time())
@@ -364,8 +404,8 @@ class Ble_Apple_Utils(object):
         # +------------------------+--------+-------+--------+-------+-----------------+------------------------------------------------------------+
         airpods = {'some': 3, 'state1': 1, 'state2': 1, 'data1': 1, 'data2': 1, 'data3': 2, 'data4': 16}
         result = self.parse_struct(data, airpods)
-        with open("airpods.txt", "a") as out:
-            out.write(str(result))
+        # with open("airpods.txt", "a") as out:
+        #     out.write(str(result))
         # print("AirPods:{}".format(data))
         # print(result)
         state = unkn = '<unknown>'
@@ -379,7 +419,7 @@ class Ble_Apple_Utils(object):
             self.phones[mac]['state'] = state
             self.phones[mac]['time'] = int(time.time())
         else:
-            self.phones[mac] = {'state': state, 'device': 'AirPods', 'wifi': '<none>', 'os': '<none>', 'phone': '<none>',
+            self.phones[mac] = {'state': state, 'device': 'AirPods', 'airdrop': '-', 'os': '-', 'phone': '-',
                         'time': int(time.time())}
             self.resolved_macs.append(mac)
 

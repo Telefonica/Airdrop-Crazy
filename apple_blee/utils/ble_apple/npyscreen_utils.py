@@ -7,16 +7,16 @@ import sys
 import time
 import subprocess
 
-
-titles = ['Mac', 'State', 'Device', 'WI-FI', 'OS', 'Rssi']
-#titles = ['Mac', 'State', 'Device', 'WI-FI', 'OS', 'Header', 'Data', 'Rssi'] # debug
-
 class App(npyscreen.StandardApp):
 
     def __init__(self, airdrop, utils):
         super().__init__()
         self.airdrop = airdrop
         self.utils = utils
+        if(not utils.debug):
+            self.titles = ['Mac', 'State', 'Device', 'Airdrop', 'OS', 'Rssi']
+        else:
+            self.titles = ['Mac', 'State', 'Device', 'Airdrop', 'OS', 'Header', 'Data', 'Rssi']
 
     """Main class attach a new app with the given form name
     
@@ -59,7 +59,7 @@ class MainForm(npyscreen.FormBaseNew):
     def create(self):
         """Creates the main form of the Npyscreen
         """
-        global titles
+        titles = self.parentApp.titles
         new_handlers = {
             "^C": self.exit_func
         }
@@ -139,11 +139,14 @@ class MainForm(npyscreen.FormBaseNew):
         """
         self.clear_zombies()
         row = []
-        for phone, value in self.parentApp.utils.phones.items():
-            row.append([phone, value.get('state', "<unknown>"), value.get('device', "<unknown>"), value.get('wifi', "<unknown>"), 
-            value.get('os', "<unknown>"), value.get('rssi', "<unknown>")])
-            # row.append([phone, value.get('state', "<unknown>"), value.get('device', "<unknown>"), value.get('wifi', "<unknown>"), 
-            # value.get('os', "<unknown>"), value.get('header', "<unknown>"), value.get('data', "<unknown>"), value.get('rssi', "<unknown>")]) # debug
+        if(not self.parentApp.utils.debug):
+            for phone, value in self.parentApp.utils.phones.items():
+                row.append([phone, value.get('state', "<unknown>"), value.get('device', "<unknown>"), value.get('airdrop', "<unknown>"), 
+                value.get('os', "<unknown>"), value.get('rssi', "<unknown>")])
+        else:
+            for phone, value in self.parentApp.utils.phones.items():
+                row.append([phone, value.get('state', "<unknown>"), value.get('device', "<unknown>"), value.get('airdrop', "<unknown>"), 
+                value.get('os', "<unknown>"), value.get('header', "<unknown>"), value.get('data', "<unknown>"), value.get('rssi', "<unknown>")]) # debug
 
         return row
 
@@ -202,7 +205,7 @@ class MainForm(npyscreen.FormBaseNew):
         return self.gd.values[self.gd.edit_cell[0]][5]
 
     def get_cell_name(self):
-        global titles
+        titles = self.parentApp.titles
         return titles[self.gd.edit_cell[1]]
 
     def upd_cell(self, argument):

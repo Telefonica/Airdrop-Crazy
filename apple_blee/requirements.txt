@@ -3,6 +3,7 @@ fleep
 Pillow
 pybluez
 requests
+Flask
 pycrypto
 netifaces
 prettytable

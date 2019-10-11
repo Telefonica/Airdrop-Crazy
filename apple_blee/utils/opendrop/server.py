@@ -76,7 +76,7 @@ class AirDropServer:
         return info
 
     def start_service(self):
-        logger.info(f'Announcing services: host {self.config.host_name}, address {self.ip_addr}, port {self.config.port}, mail {self.config.email}, phone {self.config.phone}')
+        print(f'Announcing services: host {self.config.host_name}, address {self.ip_addr}, port {self.config.port}, mail {self.config.email}, phone {self.config.phone}')
         self.zeroconf.register_service(self.service_info)
 
     def _init_server(self):
@@ -148,7 +148,6 @@ class AirDropServerHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def alert_discovery(self, post_data):
-        print("found one ...")
         try:
             z = plistlib.loads(post_data, fmt=plistlib.FMT_BINARY)['SenderRecordData']
             result = re.search('<key>ValidatedPhoneHashes</key>(.*)</array>', str(z))
