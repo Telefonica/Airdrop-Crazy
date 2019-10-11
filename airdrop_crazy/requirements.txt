@@ -1,0 +1,25 @@
+bs4
+fleep
+Pillow
+requests
+Flask
+pycrypto
+netifaces
+prettytable
+libarchive-c
+ctypescrypto
+requests
+ifaddr
+flask-cors
+flask_jwt_extended
+flask
+flask-socketio
+eventlet
+gevent
+qrcode[pil]
+bs4
+blueprints
+phonenumbers
+piplapis-python
+pybluez
+pip install --upgrade 'sentry-sdk[flask]==0.14.1'

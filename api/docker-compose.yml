@@ -29,7 +29,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - my-db:/var/lib/mysql
+      - /var/lib/mysql:/var/lib/mysql
     environment:
       MYSQL_DATABASE: airdrop-pro
       MYSQL_USER: airdrop

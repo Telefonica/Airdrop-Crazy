@@ -4,3 +4,4 @@ mysqlclient
 gunicorn
 flask-cors
 flask_jwt_extended
+sentry-sdk[flask]==0.14.1

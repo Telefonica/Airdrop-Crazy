@@ -12,6 +12,9 @@
 # Windows
 Thumbs.db
 
+# Pickle library
+*.pickle
+
 # Source for the following rules: https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -129,4 +132,9 @@ venv.bak/
 dmypy.json
 
 # venv
-apple_blee/appleBle/
+apple_blee/ariNope/
+apple_blee/airNope/
+
+airdrop_crazy/ngrok
+
+

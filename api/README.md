@@ -12,6 +12,10 @@
 
 ## Deployment
 
+### First step
+
+* The funcion ```generate_hashes()``` in src/views.py is responsible for the number generation, adapt it to conform your country
+
 ### In host
 * sudo bash deploy.sh
 * scp ./"DIRECTORY".zip user@dir:/usr/src
@@ -26,4 +30,3 @@ Work of the team 'Ideas Locas' (Area CDO of Telefonica):
 
 * Pablo González Pérez (@pablogonzalezpe)
 * Lucas Fernández Aragón (@lucferbux)
-* Josué Encinar Garcia (@josueencinar)

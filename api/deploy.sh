@@ -1,7 +1,6 @@
 #!bin/bash
 WORKING_DIR="AirdropDeploy"
-ENVIR="mitnick"
-URL="http://localhost"
+
 while getopts ":u:d:e:h" opt; do
       case $opt in
         d ) WORKING_DIR="$OPTARG";;
@@ -19,7 +18,6 @@ while getopts ":u:d:e:h" opt; do
     done
 
 echo "Your working directory is "$WORKING_DIR""
-echo "Your url is "$URL""
 
 if [ -d "$WORKING_DIR" ]; then rm -Rf $WORKING_DIR; fi
 if [ -d "$WORKING_DIR.zip" ]; then rm -Rf $WORKING_DIR.zip; fi

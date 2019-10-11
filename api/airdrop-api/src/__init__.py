@@ -6,6 +6,15 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 import logging
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+
+
+sentry_sdk.init(
+    dsn="https://dac5c93735864365b79630c1995dfbea@sentry.io/2031635",
+    integrations=[FlaskIntegration()]
+)
+
 
 # Creates the Flask application, called in bootstrap.sh
 app = Flask(__name__)
