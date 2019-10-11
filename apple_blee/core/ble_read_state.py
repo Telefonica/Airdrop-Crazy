@@ -29,6 +29,7 @@ class Ble_Read():
             self.ssid = args.ssid
             self.airdrop = args.airdrop
             self.debug = args.debug
+            self.ble_utils = None
         else:
             self.ttl = ttl
             self.ble_iface = ble_iface
@@ -36,19 +37,19 @@ class Ble_Read():
             self.ssid = ssid
             self.airdrop = airdrop
             self.debug = debug
+            self.ble_utils = Ble_Apple_Utils(self.ssid, self.airdrop, self.ttl, self.w_iface, self.ble_iface, self.debug)
         self.pr = None
         self.args = args
-        self.ble_utils = None
+        
 
     def service(self):
         toggle_device(self.ble_iface, True)
-        self.ble_utils = Ble_Apple_Utils(self.ssid, self.airdrop, self.ttl, self.w_iface, self.ble_iface, self.debug)
         self.ble_utils.init_bluez()
         thread1 = Thread(target=self.ble_utils.do_sniff, args=(False,))
         thread1.daemon = True
         thread1.start()
         thread1.join()
-
+        
     def get_info(self):
         return self.ble_utils.phones
         

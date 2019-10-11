@@ -11,3 +11,6 @@ libarchive-c
 ctypescrypto
 requests
 ifaddr
+flask-cors
+flask_jwt_extended
+flask
