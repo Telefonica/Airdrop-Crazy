@@ -35,7 +35,7 @@ Devices:
 ```
 
 
-### Script: ble_read_script.py
+### CLI: ble_read_script.py
 
 This script sniffs `BLE` traffic and displays status messages from Apple devices.
 Moreover, the tool detects requests for password sharing from Apple devices. In these packets, we can get first 3 bytes of sha256(phone_number) and could try to guess the original phone number using prepared tables with phone hash values.
@@ -71,7 +71,7 @@ press `Ctrl+q` to exit
 
 
 
-### Script: airdrop_leak.py
+### CLI: airdrop_leak.py
 
 This script allows to get mobile phone number of any user who will try to send file via AirDrop
 
@@ -103,7 +103,7 @@ With no params, the script just displays phone hash and ipv6 address of the send
 sudo python3 airdrop_leak.py
 ```
 
-### Script: adv_wifi.py
+### CLI: adv_wifi.py
 
 
 This script sends `BLE` messages with WiFi password sharing request. This PoC shows that an attacker can trigger a pop up message on the target device if he/she knows any phone/email that exists on the victim's device
@@ -135,7 +135,7 @@ For a WiFi password request, we'll need to specify any contact (email/phone) tha
 sudo python3 adv_wifi.py -e pr@hexway.io -s hexway
 ```
 
-### Script: adv_airpods.py
+### CLI: adv_airpods.py
 
 This script mimics AirPods by sending `BLE` messages
 
@@ -170,6 +170,5 @@ This service allows to build a service to request the hashed phones, just update
 
 ## Contacts
 
-[https://hexway.io](https://hexway.io)<br>
-[@_hexway](https://twitter.com/_hexway)
 [Lucas Fernandez](https://twitter.com/lucferbux)
+[Pablo Gonzalez](https://twitter.com/pablogonzalezpe)
