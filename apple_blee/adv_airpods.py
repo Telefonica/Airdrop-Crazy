@@ -4,10 +4,6 @@
 from core.adv_airpods import AdvAirpods
 import argparse
 
-
-
-
-
 def create_parser():
     help_desc = '''
     AirPods advertise spoofing PoC

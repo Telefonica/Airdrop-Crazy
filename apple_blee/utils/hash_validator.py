@@ -1,6 +1,15 @@
 import requests
 
 def check_hash(hash):
+    """Check the hash to the endpoint were the api Docker has been deployed
+    
+    Args:
+        hash (str): Hash string obtained with airdrop_leak script
+    
+    Returns:
+        str: Phone received or "None"
+    """
+
     url = "http://172.16.0.218:5000/api/search"
     querystring = {"hash": hash}
     headers = {
@@ -11,12 +20,3 @@ def check_hash(hash):
         return response.json().get("phone", "None")
     return "None"
 
-if __name__ == "__main__":
-
-    response = check_hash("3904ce0b7da5df62cae348a3010d35ca95a4653d28fb5b39534d9ec76a5932a9")
-    print(response)
-    print(type(response))
-    if(response != "None"):
-        print("good")
-    else:
-        print("none")

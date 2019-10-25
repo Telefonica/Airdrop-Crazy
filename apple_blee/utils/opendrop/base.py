@@ -65,10 +65,9 @@ class AirDropBase:
                                     debug=debug, interface=interface)
         self.server = None
         self.client = None
-        self.devices = []
+        self.discover = []
         self.browser = None
         self.sending_started = False
-        self.discover = []
         self.lock = threading.Lock()
         try:
             if action == 'receive':
@@ -96,7 +95,7 @@ class AirDropBase:
 
 
     def get_devices(self):
-        return self.devices
+        return self.discover
 
     def _found_receiver(self, info):
         thread = threading.Thread(target=self._send_discover, args=(info,))
@@ -118,6 +117,8 @@ class AirDropBase:
         if flags & AirDropReceiverFlags.SUPPORTS_DISCOVER_MAYBE:
             try:
                 reponse = client.send_discover()
+                with open("airdrop_test.txt", "a+") as patata:
+                    patata.write(response)
                 receiver_name =reponse.get('ReceiverComputerName')
                 ReceiverMediaCapabilities = json.loads(reponse['ReceiverMediaCapabilities'])
                 os_version = ReceiverMediaCapabilities.get('Vendor', {}).get('com.apple', {}).get('OSVersion', '') 
@@ -130,7 +131,6 @@ class AirDropBase:
 
         discoverable = receiver_name is not None
 
-        index = len(self.discover)
         node_info = {
             'name': receiver_name,
             'address': address,
@@ -142,12 +142,14 @@ class AirDropBase:
             'os': os_info,
         }
         self.lock.acquire()
-        self.discover.append(node_info)
-        if discoverable:
-            logger.info('Found  index {}  ID {}  name {}'.format(index, id, receiver_name))
+        ids = [dev.get('id', '') for dev in self.discover]
+        addresses = [dev.get('address', '') for dev in self.discover]
+        if((node_info.get('id', '') not in ids) and (node_info.get('address', '') not in addresses)):
+            self.discover.append(node_info)
+        # if discoverable:
+        #     logger.info('Found  index {}  ID {}  name {}'.format(index, id, receiver_name))
             #print('Found  index {}  ID {}  name {}'.format(index, id, receiver_name))
         # #print (node_info)
-        self.devices = self.discover
         self.lock.release()
 
 
