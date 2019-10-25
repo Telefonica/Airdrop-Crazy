@@ -16,7 +16,7 @@ class App(npyscreen.StandardApp):
         if(not utils.debug):
             self.titles = ['Mac', 'State', 'Device', 'Airdrop', 'OS', 'Rssi']
         else:
-            self.titles = ['Mac', 'State', 'Device', 'Airdrop', 'OS', 'Header', 'Data', 'Rssi']
+            self.titles = ['Mac', 'State', 'Device', 'Airdrop', 'OS', 'Header', 'Data', 'Rssi', 'Packet']
 
     """Main class attach a new app with the given form name
     
@@ -146,7 +146,7 @@ class MainForm(npyscreen.FormBaseNew):
         else:
             for phone, value in self.parentApp.utils.phones.items():
                 row.append([phone, value.get('state', "<unknown>"), value.get('device', "<unknown>"), value.get('airdrop', "<unknown>"), 
-                value.get('os', "<unknown>"), value.get('header', "<unknown>"), value.get('data', "<unknown>"), value.get('rssi', "<unknown>")]) # debug
+                value.get('os', "<unknown>"), value.get('header', "<unknown>"), value.get('data', "<unknown>"), value.get('rssi', "<unknown>"), (value.get('hash1', ""), value.get('hash2', ""))]) # debug
 
         return row
 
@@ -172,18 +172,20 @@ class MainForm(npyscreen.FormBaseNew):
         results = self.parentApp.utils.get_airdrop_devices()
         return self.print_results3(results)
 
-    def print_results3(self, data):
-        if not len(data):
+    def print_results3(self, devices):
+        if not len(devices):
             return ''
-        u_data = []
-        for dev in data:
-            if dev not in u_data:
-                u_data.append(dev)
+        
         x = PrettyTable()
         x.field_names = ["Name", "Host", "OS", "Discoverable", 'Address']
-        for dev in u_data:
+        for dev in devices:
             x.add_row([dev.get('name', ''), dev.get('host', ''), dev.get('os', ''), dev.get('discoverable', ''), dev.get('address', '')])
         return x.get_string()
+
+    # def check_exist(self, new_devices, actual_devices):
+    #     ids = [dev.get('id') for dev in actual_devices]
+    #     devices_filtered = [dev for dev in new_devices if dev.get('id' not in ids)]
+    #     return devices_filtered
 
     # ------------ UTILS --------------------------
     def get_mac_val_from_cell(self):
@@ -215,15 +217,3 @@ class MainForm(npyscreen.FormBaseNew):
             thread2 = Thread(target=self.get_dev_name, args=(mac,))
             thread2.daemon = True
             thread2.start()
-        # disabled
-        # if cell == 'Phone':
-        #     if self.get_phone_val_from_cell() == 'X':
-        #         hashinfo = "Phone hash={}, email hash={}, AppleID hash={}, SSID hash={} ({})".format(
-        #             hash2phone[self.get_mac_val_from_cell()]['ph_hash'],
-        #             hash2phone[self.get_mac_val_from_cell()]['email_hash'],
-        #             hash2phone[self.get_mac_val_from_cell()]['appleID_hash'],
-        #             hash2phone[self.get_mac_val_from_cell()]['SSID_hash'],
-        #             get_dict_val(dictOfss, hash2phone[self.get_mac_val_from_cell()]['SSID_hash']))
-        #         table = print_results2(hash2phone[self.get_mac_val_from_cell()]['phone_info'])
-        #         rez = "{}\n\n{}".format(hashinfo, table)
-        #         npyscreen.notify_confirm(rez, title="Phone number info", wrap=True, wide=True, editw=0)

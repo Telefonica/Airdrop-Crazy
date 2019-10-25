@@ -37,12 +37,14 @@ class Ble_Read():
             self.ssid = ssid
             self.airdrop = airdrop
             self.debug = debug
-            self.ble_utils = Ble_Apple_Utils(self.ssid, self.airdrop, self.ttl, self.w_iface, self.ble_iface, self.debug)
+            self.ble_utils = Ble_Apple_Utils(self.ssid, self.airdrop, self.ttl, self.ble_iface, self.debug)
         self.pr = None
         self.args = args
+        self.scanning = False
         
 
     def service(self):
+        self.scanning = True
         toggle_device(self.ble_iface, True)
         self.ble_utils.init_bluez()
         thread1 = Thread(target=self.ble_utils.do_sniff, args=(False,))
@@ -77,12 +79,12 @@ class Ble_Read():
             iwdev (str): Wifi interface
             dev_id (int): Bluetooth interface
         """
-        ble_utils = Ble_Apple_Utils(ssid, airdrop, ttl, iwdev, dev_id, debug)
+        ble_utils = Ble_Apple_Utils(ssid, airdrop, ttl, dev_id, debug)
         if airdrop:
             try:
                 print("Configuring owl interface...")
                 check_wifi_config(iwdev)
-                sleep(4) # time to wake up owl process
+                sleep(6) # time to wake up owl process
             except ModeMonitorException:
                 print("Error, mode monitor not suported in the given interface, press ctr+c to continue")
                 return
@@ -97,9 +99,6 @@ class Ble_Read():
                 return
 
         if ssid:
-            thread_ssid = Thread(target=ble_utils.get_ssids, args=())
-            thread_ssid.daemon = True
-            thread_ssid.start()
             thread2 = Thread(target=ble_utils.start_listetninig, args=())
             thread2.daemon = True
             thread2.start()

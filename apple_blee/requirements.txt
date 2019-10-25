@@ -14,3 +14,7 @@ ifaddr
 flask-cors
 flask_jwt_extended
 flask
+flask-socketio
+eventlet
+gevent
+qrcode[pil]

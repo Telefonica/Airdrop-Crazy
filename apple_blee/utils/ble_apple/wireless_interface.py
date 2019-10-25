@@ -34,11 +34,11 @@ def check_wifi_config(iwdev):
         process_id = owl_result.lstrip(' ').split(" ")[0]
         os.kill(int(process_id), signal.SIGTERM)
 
-    # result = Popen(["owl", "-i", iwdev, "-v"])
-    result = Popen(["owl", "-i", iwdev, "-D"], stdout=PIPE, stderr=PIPE)
-    if(result.stderr.read()):
-        print("Error")
-        raise OwlException
+    result = Popen(["owl", "-i", iwdev])
+    # result = Popen(["owl", "-i", iwdev, "-D"], stdout=PIPE, stderr=PIPE)
+    # if(result.stderr.read()):
+    #     print("Error")
+    #     raise OwlException
 
 
 
