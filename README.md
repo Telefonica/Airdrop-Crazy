@@ -1,4 +1,4 @@
-# Apple bleee
+# Airdrop Crazy
 
 
 ## Disclaimer
@@ -6,21 +6,19 @@ These scripts are experimental PoCs that show what an attacker get from Apple de
 
 ***This project is created only for educational purposes and cannot be used for law violation or personal gain.<br/>The author of this project is not responsible for any possible harm caused by the materials of this project***
 
+This project is a hard fork of the project created by the Hexway team called [Apple bleee](https://github.com/hexway/apple_bleee) 
 
-## Requirements
-To use these scripts you will need a Bluetooth adapter for sending `BLE` messages and WiFi card supporting active monitor mode with frame injection for communication using `AWDL` (AirDrop). **We recommend the Atheros AR9280** chip (IEEE 802.11n) we used to develop and test this code.
-We have tested these PoCs on **Kali Linux**
 
-## Requirements (Lucas)
+## Requirements 
 I have adapted those scripts deleting all the function that was not available and refactoring the scripts in order to use a more Pythonic and modern way to organize the code. Please read carefully the [OWL](https://github.com/seemoo-lab/owl) and [Opendrop](https://github.com/seemoo-lab/opendrop) documentation in order to understand what's going on underneath these scripts.
 Also, you need for the airdrop part an **Active Monitor Network Card** as the Authors said, the **Atheros AR9280** should work but you can use the **TP-LINK Archer T2U/T1U** if you want a usb card.
+We have tested the tool with Ubuntu 18.03 and Linux 5+ Kernel due to the TP-Link Archer requieremnets
 
 ## Installation
 
 ```
 # clone main repo
-git clone https://github.com/hexway/apple_bleee.git && cd ./apple_bleee
-cd apple_ble
+git clone https://github.com/ElevenPaths/Airdrop-Crazy && cd ./airdrop_crazy
 sudo ./install.sh
 ```
 
@@ -31,8 +29,27 @@ Before using the tool, check that your Bluetooth adapter is connected
 ```
 hcitool dev
 Devices:
-    hci0    00:1A:7D:DA:71:13
+    hci0    XX:XX:XX:XX:XX:XX
 ```
+Then make sure you have downloaded **owl** and you have a compatible network card that supports active framing.
+
+There are two main ways to use the tool:
+
+* **Server mode**: Follow the instructions to run the tool with the app and local server
+* **CLI Scripts**: Run the scripts local with the cli
+
+
+### Server Mode
+In this mode, you need the companion iOS app to display the information, these are all the requirements:
+
+* [Ngrok](https://ngrok.com): To expose the local server to the app, just follow the instructions in the webpage.
+* [XCode](https://developer.apple.com/xcode/): To compile the SwiftUI project.
+
+Now you just need to run the local server with ```bash bootstrap.sh``` or ```python3 app.py```.
+
+And then scan the qr generated with the app.
+
+![server](img/server.png)
 
 
 ### CLI: ble_read_script.py
@@ -58,6 +75,7 @@ optional arguments:
                         Wireless Interface
   -s, --ssid            Get SSID from request
   -a, --airdrop         Get info from AWDL airdrop
+  -d, --debug           Debug mode
 
 ```
 
@@ -170,5 +188,6 @@ This service allows to build a service to request the hashed phones, just update
 
 ## Contacts
 
-[Lucas Fernandez](https://twitter.com/lucferbux)
-[Pablo Gonzalez](https://twitter.com/pablogonzalezpe)
+* [Lucas Fernandez](https://twitter.com/lucferbux)
+
+* [Pablo Gonzalez](https://twitter.com/pablogonzalezpe)

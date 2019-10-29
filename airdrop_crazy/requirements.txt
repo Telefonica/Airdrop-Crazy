@@ -1,7 +1,6 @@
 bs4
 fleep
 Pillow
-pybluez
 requests
 Flask
 pycrypto
@@ -18,3 +17,8 @@ flask-socketio
 eventlet
 gevent
 qrcode[pil]
+bs4
+blueprints
+phonenumbers
+piplapis-python
+pybluez

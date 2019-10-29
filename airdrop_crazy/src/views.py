@@ -10,9 +10,11 @@ from flask import Flask, jsonify, request
 from flask_jwt_extended import jwt_required
 from flask_socketio import send, emit
 from core.ble_read_state import Ble_Read
+from core.airdrop_leak import AirdropLeak
 
 
 ble_read = Ble_Read()
+airdrop_leak = AirdropLeak(iface="") # Change the iface
 
 @socketio.on('connect')
 def test_connect():
@@ -31,13 +33,20 @@ def device_status():
     if(not ble_read.scanning):
         thread = Thread(target=ble_read.service, args=())
         thread.start()
-        print("inicializamos...")
+        print("Starting ble...")
         socketio.sleep(1)
+
+    if(not airdrop_leak.scanning):
+        thread = Thread(target=airdrop_leak.run, args=())
+        thread.start()
+        print("Starting airdrop...")
 
     while True:
         devices = ble_read.get_info()
-        devices_parsed = normalize_results(devices)
-        emit('when pressed',  devices_parsed)
+        people = airdrop_leak.get_people()
+        devices_parsed = normalize_results(devices, "mac")
+        people_parsed = normalize_results(people, "hash")
+        emit('device_detected',  {"devices": devices_parsed, "people": people_parsed})
         socketio.sleep(0.5)
 
 

@@ -1,6 +1,5 @@
 #!bin/bash
 WORKING_DIR="AirdropDeploy"
-ENVIR="mitnick"
 URL="http://localhost"
 while getopts ":u:d:e:h" opt; do
       case $opt in

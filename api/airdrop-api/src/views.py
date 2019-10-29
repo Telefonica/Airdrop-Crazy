@@ -41,6 +41,11 @@ def populate_db():
     )
 
 def generate_number(number):
+    """Generate new entry with hash and number relationship
+    
+    Args:
+        number (str): Phone number
+    """
     hash = hashlib.sha256(number.encode()).hexdigest()
     phone = Phone(hash=hash, phone=number)
     db.session.add(phone)
@@ -48,6 +53,8 @@ def generate_number(number):
 
 
 def generate_hashes():
+    """Generate hashes from all the numbers of Spain
+    """
     for x in range (600000000, 800000000):
         if((x % 20000000) == 0):
             print(f"{time.time()}, Number: {x}")
