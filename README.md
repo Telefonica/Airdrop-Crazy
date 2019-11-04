@@ -1,5 +1,6 @@
 # Airdrop Crazy
-
+[![Python Version][python-image]][python-url]
+[![License][license-image]][license-url]
 
 ## Disclaimer
 These scripts are experimental PoCs that show what an attacker get from Apple devices if they sniff Bluetooth traffic.
@@ -191,3 +192,11 @@ This service allows to build a service to request the hashed phones, just update
 * [Lucas Fernandez](https://twitter.com/lucferbux)
 
 * [Pablo Gonzalez](https://twitter.com/pablogonzalezpe)
+
+[python-image]: https://img.shields.io/badge/Python-3.7-yellow
+[python-url]: https://www.python.org
+[license-image]: https://img.shields.io/badge/License-GPL-blue.svg
+[license-url]: LICENSE
+
+
+
