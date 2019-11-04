@@ -64,9 +64,6 @@ class AirdropLeak():
 
     def get_hash(self, data):
         return hashlib.sha256(data.encode('utf-8')).hexdigest()
-    
-#{'ip': 'fe80::94fb:afff:fe4c:fbb%awdl0', 'hash': '3904ce0b7da5df62cae348a3010d35ca95a4653d28fb5b39534d9ec76a5\\x04)932a9', 'phone': ''}
-# {'3904ce0b7da5df62cae348a3010d35ca95a4653d28fb5b39534d9ec76a5932a9': {'name': 'Lucas Fernández', 'number': '34617135734', 'carrier': 'VODAFONE ESPAÑA  S.A. UNIPERSONAL', 'country': 'Spain', 'gender': 'M'}}
 
 
     def process_devices(self, device):
