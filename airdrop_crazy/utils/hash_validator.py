@@ -10,10 +10,10 @@ def check_hash(hash):
         str: Phone received or "None"
     """
 
-    url = ""
+    url = "http://172.16.0.218:5000/api/search"
     querystring = {"hash": hash}
     headers = {
-        '',
+        'Authorization': "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NTg0MjIxMjMsIm5iZiI6MTU1ODQyMjEyMywianRpIjoiZTE2ZmFjYzQtZGU4OS00NWY1LWI3MjQtM2YxODM4NjQxZGUwIiwiaWRlbnRpdHkiOiJrX21pdG5pYyIsImZyZXNoIjpmYWxzZSwidHlwZSI6ImFjY2VzcyJ9.BPXKILXs0vDGRRe5svcxlAGJUFMI_gCgX4Y2Xh2B_h0",
     }
     response = requests.request("GET", url, headers=headers, params=querystring)
     if response.status_code == 200:

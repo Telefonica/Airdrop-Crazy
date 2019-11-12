@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import as_completed
 from timeit import timeit
 from .api_services.everyoneapi import EveryoneApi
+from .api_services.mobileconnect import MobileConnect
 
 class RequestData():
 
@@ -31,9 +32,12 @@ class RequestData():
         """
         everyone = EveryoneApi(phone=self.phone)
         carrier_everyone, name, gender = everyone.request_data()
+        mobileconnect = MobileConnect(phone=self.phone)
+        carrier_mobileconnect, country, currency = mobileconnect.request_data()
         self.name = name
         self.gender = gender
-        self.carrier = carrier_everyone
+        self.carrier = carrier_everyone if carrier_everyone else carrier_mobileconnect
+        self.country = country
         return {
             "name" : self.name,
             "number" : self.phone,

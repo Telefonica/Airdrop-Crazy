@@ -14,7 +14,7 @@ from core.airdrop_leak import AirdropLeak
 
 
 ble_read = Ble_Read()
-airdrop_leak = AirdropLeak(iface="") # Change the iface
+airdrop_leak = AirdropLeak(iface="wlx503eaaec4c39") # Change the iface
 
 @socketio.on('connect')
 def test_connect():
