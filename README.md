@@ -46,6 +46,9 @@ In this mode, you need the companion iOS app to display the information, these a
 * [Ngrok](https://ngrok.com): To expose the local server to the app, just follow the instructions in the webpage.
 * [XCode](https://developer.apple.com/xcode/): To compile the SwiftUI project.
 
+First you need to select the wirless interface in `views.py`, in the code line `airdrop_leak = AirdropLeak(iface="")`
+Then you need to 
+
 Now you just need to run the local server with ```bash bootstrap.sh``` or ```python3 app.py```.
 
 And then scan the qr generated with the app.

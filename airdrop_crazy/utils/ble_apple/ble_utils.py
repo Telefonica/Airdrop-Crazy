@@ -195,7 +195,7 @@ class Ble_Apple_Utils(object):
         Returns:
             str: Device to get
         """
-        ipad = ["47", "4b", "03", "0b", "07"]
+        ipad = ["47", "4b", "0b", "07"]
         iphone = ["1a", "5b", "5a", "1b", "13", "01", "23", "2b", "27", "5e", "6e", "67", "6b"]
         if(status in iphone):
             return "iPhone"
