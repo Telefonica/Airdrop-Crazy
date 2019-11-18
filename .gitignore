@@ -131,3 +131,7 @@ dmypy.json
 # venv
 apple_blee/ariNope/
 apple_blee/airNope/
+
+airdrop_crazy/ngrok
+
+*.pickle

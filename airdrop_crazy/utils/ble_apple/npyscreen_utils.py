@@ -120,15 +120,15 @@ class MainForm(npyscreen.FormBaseNew):
         """Clear all the zombies generated
         """
         cur_time = int(time.time())
-        for k in list(self.parentApp.utils.phones):
-            if cur_time - self.parentApp.utils.phones[k]['time'] > self.parentApp.utils.ttl:
-                del self.parentApp.utils.phones[k]
-                if self.parentApp.utils.resolved_macs.count(k):
-                    self.parentApp.utils.resolved_macs.remove(k)
-                if self.parentApp.utils.resolved_devs.count(k):
-                    self.parentApp.utils.resolved_devs.remove(k)
-                if self.parentApp.utils.victims.count(k):
-                    self.parentApp.utils.victims.remove(k)
+        for device in list(self.parentApp.utils.phones):
+            if cur_time - self.parentApp.utils.phones[device]['time'] > self.parentApp.utils.ttl:
+                del self.parentApp.utils.phones[device]
+                if self.parentApp.utils.resolved_macs.count(device):
+                    self.parentApp.utils.resolved_macs.remove(device)
+                if self.parentApp.utils.resolved_devs.count(device):
+                    self.parentApp.utils.resolved_devs.remove(device)
+                if self.parentApp.utils.victims.count(device):
+                    self.parentApp.utils.victims.remove(device)
 
 
     def print_results(self):

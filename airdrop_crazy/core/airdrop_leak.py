@@ -7,6 +7,7 @@ import hashlib
 from threading import Thread, Timer
 import argparse
 import sys
+import pickle
 from utils.opendrop.base import AirDropBase
 from utils.hash_validator import check_hash
 from business_card.request_data import RequestData
@@ -14,18 +15,26 @@ from business_card.request_data import RequestData
 
 class AirdropLeak():
 
-    def __init__(self, args=None, name='evil-drop', iface='wlan0', phone='34666666666', mail='example@gmail.com', callback=None):
+    def __init__(self, args=None, name='evil-drop', iface='wlan0', phone='34666666666', mail='example@gmail.com', channel='44', callback=None):
         if args:
             self.name = args.name
             self.iface = args.iface
             self.phone = args.phone
             self.mail = args.mail
+            self.channel = args.channel
         else:
             self.name = name
             self.iface = iface
             self.phone = phone
             self.mail = mail
+            self.channel = channel
         self.results = {}
+        try:
+            with open('results.pickle', 'rb') as handle:
+                self.results = pickle.load(handle)
+        except:
+            pass
+
         self.scanning = False
 
 
@@ -33,7 +42,9 @@ class AirdropLeak():
         self.scanning = True
         try:
             print("Configuring owl interface...")
-            check_wifi_config(self.iface)
+            thread = Thread(target=self.save_results, args=())
+            thread.start()
+            check_wifi_config(self.iface, self.channel)
             time.sleep(5) # time to wake up owl process
         except ModeMonitorException:
             print("Error, mode monitor not suported in the given interface, press ctr+c to continue")
@@ -51,6 +62,7 @@ class AirdropLeak():
         try:
             self.start_listetninig()
         except:
+
             print("")
             print("Bye")
             sys.exit()
@@ -64,6 +76,13 @@ class AirdropLeak():
 
     def get_hash(self, data):
         return hashlib.sha256(data.encode('utf-8')).hexdigest()
+
+    def save_results(self):
+        while(True):
+            time.sleep(15)
+            with open('results.pickle', 'wb') as handle:
+                pickle.dump(self.results, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            
 
 
     def process_devices(self, device):
@@ -98,6 +117,7 @@ def create_parser():
     parser.add_argument('-i', '--iface', default='wlan0', help='Wireless inteface')
     parser.add_argument('-p', '--phone', default='34666666666', help='phone')
     parser.add_argument('-m', '--mail', default='example@gmail.com', help='mail')
+    parser.add_argument('-c', '--channel', default='6', help='channel to hop -> 6, 44, 149')
     return parser.parse_args()
 
 if __name__ == "__main__":

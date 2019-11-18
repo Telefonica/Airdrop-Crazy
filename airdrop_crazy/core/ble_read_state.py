@@ -53,7 +53,22 @@ class Ble_Read():
         thread1.join()
         
     def get_info(self):
+        self.clear_zombies()
         return self.ble_utils.phones
+
+    def clear_zombies(self):
+        """Clear all the zombies generated
+        """
+        cur_time = int(time.time())
+        for device in list(self.ble_utils.phones):
+            if cur_time - self.ble_utils.phones[device]['time'] > self.ble_utils.ttl:
+                del self.ble_utils.phones[device]
+                if self.ble_utils.resolved_macs.count(device):
+                    self.ble_utils.resolved_macs.remove(device)
+                if self.ble_utils.resolved_devs.count(device):
+                    self.ble_utils.resolved_devs.remove(device)
+                if self.ble_utils.victims.count(device):
+                    self.ble_utils.victims.remove(device)
         
     def cli(self):
         toggle_device(self.ble_iface, True)

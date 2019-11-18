@@ -14,7 +14,8 @@ from core.airdrop_leak import AirdropLeak
 
 
 ble_read = Ble_Read()
-airdrop_leak = AirdropLeak(iface="wlx503eaaec4c39") # Change the iface
+# 6, 44, 149
+airdrop_leak = AirdropLeak(iface="wlx503eaaec4c39", channel="6") # Change the iface
 
 @socketio.on('connect')
 def test_connect():
@@ -48,6 +49,14 @@ def device_status():
         people_parsed = normalize_results(people, "hash")
         emit('device_detected',  {"devices": devices_parsed, "people": people_parsed})
         socketio.sleep(0.5)
+
+# @app.route('/change-channel', methods=['GET'])
+# def changeChannel():
+#     channel = request.args.get('channel', '6')
+#     airdrop_leak = AirdropLeak(iface="wlx503eaaec4c39", channel=channel)
+#     thread = Thread(target=airdrop_leak.run, args=())
+#     thread.start()
+#     print("Restarting airdrop...")
 
 
 
