@@ -13,7 +13,7 @@ This project is a hard fork of the project created by the Hexway team called [Ap
 ## Requirements 
 I have adapted those scripts deleting all the function that was not available and refactoring the scripts in order to use a more Pythonic and modern way to organize the code. Please read carefully the [OWL](https://github.com/seemoo-lab/owl) and [Opendrop](https://github.com/seemoo-lab/opendrop) documentation in order to understand what's going on underneath these scripts.
 Also, you need for the airdrop part an **Active Monitor Network Card** as the Authors said, the **Atheros AR9280** should work but you can use the **TP-LINK Archer T2U/T1U** if you want a usb card.
-We have tested the tool with Ubuntu 18.03 and Linux 5+ Kernel due to the TP-Link Archer requieremnets
+We have tested the tool with Ubuntu 18.04 and Linux 5+ Kernel due to the TP-Link Archer requieremnets.
 
 ## Installation
 
