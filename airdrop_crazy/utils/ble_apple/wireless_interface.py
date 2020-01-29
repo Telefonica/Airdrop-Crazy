@@ -12,7 +12,7 @@ class ModeMonitorException(Exception):
 class OwlException(Exception):
     pass
 
-def check_wifi_config(iwdev, channel):
+def check_wifi_config(iwdev, channel, verbose=False):
     """Restart the interface, change it to monitor mode and enable owl for airdrop
     
     Args:
@@ -36,8 +36,10 @@ def check_wifi_config(iwdev, channel):
         os.kill(int(process_id), signal.SIGTERM)
 
     # 6, 44, 149
-    # result = Popen(["owl", "-i", iwdev, "-c", channel, "-v"])
-    result = Popen(["owl", "-i", iwdev, "-D", "-c", channel], stdout=PIPE, stderr=PIPE)
+    if(verbose):
+        result = Popen(["owl", "-i", iwdev, "-c", channel, "-v"])
+    else:
+        result = Popen(["owl", "-i", iwdev, "-D", "-c", channel], stdout=PIPE, stderr=PIPE)
     if(result.stderr.read()):
         print("Error")
         raise OwlException

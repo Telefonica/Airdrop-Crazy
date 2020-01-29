@@ -19,9 +19,9 @@ ble_read = Ble_Read()
 
 airdrop_leak = AirdropLeak(iface=IFACE, channel=CHANNEL) # Change the iface
 
-@socketio.on('connect')
-def test_connect():
-    print("user connected")
+# @socketio.on('connect')
+# def test_connect():
+#     print("user connected")
 
 @socketio.on_error()        
 def error_handler(e):

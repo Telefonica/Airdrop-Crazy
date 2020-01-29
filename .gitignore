@@ -132,9 +132,9 @@ venv.bak/
 dmypy.json
 
 # venv
-apple_blee/ariNope/
-apple_blee/airNope/
+airdrop_crazy/airCrazy/
+
 
 airdrop_crazy/ngrok
 
-
+src/deployment.sh

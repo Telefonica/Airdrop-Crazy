@@ -1,10 +1,12 @@
 #!/bin/bash
 NGROK_AUTHTOKEN=""
 IFACE=""
+SENTRY=""
 while getopts ":a:i:h" opt; do
       case $opt in
         a ) NGROK_AUTHTOKEN="$OPTARG";;
         i ) IFACE="$OPTARG";;
+        s ) SENTRY="$OPTARG";;
         h )
             echo "Usage:"
             echo "    deploy.sh -h               Display this help message."
@@ -43,8 +45,25 @@ echo "Configuring Apple Ble dependencies...."
 
 #Install Linux dependencies
 apt-get update
-apt-get install -y --no-install-recommends bluez libpcap-dev libev-dev libnl-3-dev libnl-genl-3-dev libnl-route-3-dev cmake libbluetooth-dev git wireless-tools net-tools aircrack-ng curl
-apt-get install -y --no-install-recommends && apt-get install -y python3-pip python3-dev  && cd /usr/local/bin && ln -s /usr/bin/python3 python && pip3 install --upgrade pip
+apt-get install -y --no-install-recommends bluez libpcap-dev libev-dev libnl-3-dev libnl-genl-3-dev libnl-route-3-dev cmake libbluetooth-dev git wireless-tools net-tools aircrack-ng curl unzip
+apt-get install -y python3-pip python3-dev  
+pip3 install --upgrade pip
+
+
+# Install drivers for Archer T2U
+read  -p "Do you want to install drivers for the Archer T2U wirless card for amd64 (y/n): " follow
+
+if [ "$follow" == "y" ]
+then
+    sudo apt install git dkms
+    git clone https://github.com/aircrack-ng/rtl8812au.git
+    cd rtl8812au
+    sudo ./dkms-install.sh
+    cd ..
+    rm -r rtl8812au
+fi
+
+
 
 # Install OWL
 git clone https://github.com/seemoo-lab/owl.git
@@ -67,8 +86,19 @@ mkdir ngrok
 cd ./ngrok
 if [ ${PWD##*/} == "ngrok" ] 
 then
-    echo "Installing ngrok..."
-    wget "https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip" && unzip ngrok-stable-linux-amd64.zip && rm ngrok-stable-linux-amd64.zip
+
+    repo=""
+    case $(uname -m) in
+        i386)   repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-freebsd-386.zip" ;;
+        i686)   repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-freebsd-amd64.zip" ;;
+        x86_64) repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip" ;;
+        arm)    dpkg --print-architecture | grep -q "arm64" && repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm64.tgz" || repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip" ;;
+    esac
+    
+    wget $repo
+
+    unzip \*.zip 
+    rm \*.zip
     ./ngrok authtoken $NGROK_AUTHTOKEN
     cd ..
 fi
@@ -76,7 +106,8 @@ fi
 
 # Change iface
 cd ./src
-sed -i "s/IFACE=\"\"/IFACE=\"$IFACE\"/g" views.py
+sed -i "s/IFACE=\"\"/IFACE=\"$IFACE\"/g" __init__.py
+sed -i "s/SENTRY_DNS=\"\"/SENTRY_DNS=\"$SENTRY\"/g" __init__.py
 cd ..
 
 
@@ -99,6 +130,6 @@ echo "Done!"
 
 if [ "$follow" == "y" ]
 then
-    echo "To activate virtualenv use: source airCrazy/bin/activate"
+    echo -e "To activate virtualenv use: \e[31msource airCrazy/bin/activate\e[0m "
     echo "To exit: deactivate"
 fi

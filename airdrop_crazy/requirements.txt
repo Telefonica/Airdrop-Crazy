@@ -18,8 +18,7 @@ eventlet
 gevent
 qrcode[pil]
 bs4
-blueprints
 phonenumbers
 piplapis-python
 pybluez
-pip install --upgrade 'sentry-sdk[flask]==0.14.1'
+sentry-sdk[flask]==0.14.1

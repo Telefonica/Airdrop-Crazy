@@ -27,7 +27,7 @@ sudo ./install.sh [NGROK_AUTH_TOKEN] [IFACE]
 
 * Donwload this version of raspbian Buster: http://downloads.raspberrypi.org/raspbian/images/raspbian-2019-09-30/
 * Download the firmware for the mediatech card TP-Link T2U: http://anduin.linuxfromscratch.org/sources/linux-firmware/mediatek/mt7610u.bin 
-* Copy the ``mt7610u.bin``firmawre to the raspberry path ``/lib/firmware/mediatek```
+* Copy the ``mt7610u.bin``firmawre to the raspberry path ``/lib/firmware/mediatek``
 * Run ``sudo modprobe -r mt76x0`` and then ``sudo modprobe mt76x0``
 
 ## How to use

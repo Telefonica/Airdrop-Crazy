@@ -9,8 +9,10 @@ import logging
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
+SENTRY_DNS=""
+
 sentry_sdk.init(
-    dsn="https://d84d3d7d2ef948cbb41c6cea6e1acb2a@sentry.io/2040497",
+    dsn=SENTRY_DNS,
     integrations=[FlaskIntegration()]
 )
 
@@ -22,7 +24,7 @@ socketio = SocketIO(app)
 CORS(app)
 jwt = JWTManager(app)
 # 6, 44, 149
-IFACE="wlx503eaaec4c39"
-CHANNEL="44"
+IFACE=""
+CHANNEL="6"
 
 from src import views
