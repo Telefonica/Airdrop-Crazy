@@ -51,6 +51,7 @@ def _run_ngrok(port):
         url = output["tunnels"][0]["public_url"]
         return url
     except:
+        print("Error configuring Ngrok")
         raise
 
 

@@ -1,6 +1,6 @@
 # coding=utf-8
 import hashlib
-from src import app, socketio, IFACE, CHANNEL
+from src import app, socketio, IFACE, CHANNEL, HCI
 from threading import Thread
 from time import sleep
 import requests
@@ -15,7 +15,7 @@ from core.airdrop_leak import AirdropLeak
 
 
 
-ble_read = Ble_Read()
+ble_read = Ble_Read(ble_iface=HCI, w_iface=IFACE)
 
 airdrop_leak = AirdropLeak(iface=IFACE, channel=CHANNEL) # Change the iface
 

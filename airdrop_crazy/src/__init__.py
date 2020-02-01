@@ -25,6 +25,7 @@ CORS(app)
 jwt = JWTManager(app)
 # 6, 44, 149
 IFACE=""
+HCI=0
 CHANNEL="6"
 
 from src import views

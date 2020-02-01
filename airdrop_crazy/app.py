@@ -9,4 +9,4 @@ if __name__ == '__main__':
         detect_ngrok()
         socketio.run(application)
     except Exception as e:
-        print("Error setting the server, ngrok may be down")
+        print("Error setting the server, might be ngrok or setting up card")

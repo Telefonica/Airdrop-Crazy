@@ -23,6 +23,8 @@ git clone https://github.com/ElevenPaths/Airdrop-Crazy && cd ./airdrop_crazy
 sudo ./install.sh [NGROK_AUTH_TOKEN] [IFACE]
 ```
 
+**To change the wireless interface, bluetooth interface or channel just go to airdropcrazy/src/__init__.py**
+
 ### Raspberry
 
 * Donwload this version of raspbian Buster: http://downloads.raspberrypi.org/raspbian/images/raspbian-2019-09-30/

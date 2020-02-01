@@ -1,17 +1,18 @@
 #!/bin/bash
 NGROK_AUTHTOKEN=""
 IFACE=""
-SENTRY=""
-while getopts ":a:i:h" opt; do
+SENTRY_DNS=""
+while getopts ":a:s:i:h" opt; do
       case $opt in
         a ) NGROK_AUTHTOKEN="$OPTARG";;
         i ) IFACE="$OPTARG";;
-        s ) SENTRY="$OPTARG";;
+        s ) SENTRY_DNS="$OPTARG";;
         h )
             echo "Usage:"
             echo "    deploy.sh -h               Display this help message."
             echo "    deploy.sh -a               Authtoken given for the ngrok service, you must register berfore"
             echo "    deploy.sh -i               Interface used in the OWL communication"
+            echo "    deploy.sh -s               Sentry http crash reporting"
             exit 0
             ;;
         \?) echo "Invalid option: -"$OPTARG"" >&2
@@ -92,22 +93,22 @@ then
         i386)   repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-freebsd-386.zip" ;;
         i686)   repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-freebsd-amd64.zip" ;;
         x86_64) repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip" ;;
-        arm)    dpkg --print-architecture | grep -q "arm64" && repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm64.tgz" || repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip" ;;
+        rasbperrypi) repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip" ;;
+        arm64) repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm64.tgz";;
+        armv7l) repo="https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip" ;;
     esac
     
     wget $repo
-
-    unzip \*.zip 
-    rm \*.zip
+    unzip *.zip 
+    rm *.zip
     ./ngrok authtoken $NGROK_AUTHTOKEN
     cd ..
 fi
 
-
 # Change iface
 cd ./src
 sed -i "s/IFACE=\"\"/IFACE=\"$IFACE\"/g" __init__.py
-sed -i "s/SENTRY_DNS=\"\"/SENTRY_DNS=\"$SENTRY\"/g" __init__.py
+sed -i "s/SENTRY_DNS=\"\"/SENTRY_DNS=\"$SENTRY_DNS\"/g" __init__.py
 cd ..
 
 

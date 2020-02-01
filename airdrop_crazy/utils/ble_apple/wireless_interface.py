@@ -25,6 +25,7 @@ def check_wifi_config(iwdev, channel, verbose=False):
     result = Popen(["iwconfig", iwdev], stdout=PIPE, stderr=PIPE)
     if(result.stderr.read()):
         # exception bad interface
+        print(f"Interface {iwdev} not found")
         raise BadInterfaceException
     r = Popen(["airmon-ng", "check", "kill"], stdout=PIPE, stderr=PIPE)
 
