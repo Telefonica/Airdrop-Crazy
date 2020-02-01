@@ -41,8 +41,6 @@ def detect_ngrok():
 def _run_ngrok(port):
     executable = str(Path("./ngrok", "ngrok"))
     ngrok = Popen([executable, 'http', str(port)], stdin=PIPE, stdout=DEVNULL, stderr=STDOUT)
-    register(ngrok.terminate)
-    localhost_url = "http://localhost:4040/api/tunnels"  # Url with tunnel details
     sleep(1)
     r = Popen(["curl", "http://localhost:4040/api/tunnels"], stdout=PIPE, stderr=PIPE)
     try:

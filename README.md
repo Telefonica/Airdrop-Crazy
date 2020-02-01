@@ -199,6 +199,17 @@ sudo python3 adv_airpods.py -r
 
 This service allows to build a service to request the hashed phones, just update the generate_number/generate_hashes functions in views.py to adapt to your phone number requirements.
 
+## Troubleshooting
+
+If you have problem finding your bluetooth dongle, might be an issue from bluez. Just run these commands:
+
+``
+sudo add-apt-repository ppa:bluetooth/bluez
+sudo apt update
+sudo apt install bluez
+``
+And restart your machine
+
 ## Contacts
 
 * [Lucas Fernandez](https://twitter.com/lucferbux)
