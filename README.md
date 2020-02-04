@@ -210,6 +210,12 @@ sudo apt install bluez
 ``
 And restart your machine
 
+If your are working in a virtual machine in macOS Catalina you might wanna change the default hci behaviour introduced with this command:
+
+``
+sudo nvram bluetoothHostControllerSwitchBehavior="never"
+``
+
 ## Contacts
 
 * [Lucas Fernandez](https://twitter.com/lucferbux)
