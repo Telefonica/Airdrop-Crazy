@@ -1,6 +1,6 @@
 # coding=utf-8
 import hashlib
-from src import app, socketio, IFACE, CHANNEL, HCI
+from src import app, socketio, network_config
 from threading import Thread
 from time import sleep
 import requests
@@ -12,16 +12,9 @@ from flask_socketio import send, emit
 from core.ble_read_state import Ble_Read
 from core.airdrop_leak import AirdropLeak
 
+ble_read = None
+airdrop_leak = None
 
-
-
-ble_read = Ble_Read(ble_iface=HCI, w_iface=IFACE)
-
-airdrop_leak = AirdropLeak(iface=IFACE, channel=CHANNEL) # Change the iface
-
-# @socketio.on('connect')
-# def test_connect():
-#     print("user connected")
 
 @socketio.on_error()        
 def error_handler(e):
@@ -33,6 +26,15 @@ def test_disconnect():
 
 @socketio.on('device_received')
 def device_status():
+    global ble_read
+    global airdrop_leak
+    if(not ble_read):
+        print(f"{network_config.w_iface}  {network_config.b_iface} {network_config.channel}")
+        ble_read = Ble_Read(ble_iface=network_config.b_iface, w_iface=network_config.w_iface)
+
+    if(not airdrop_leak):
+        airdrop_leak = AirdropLeak(iface=network_config.w_iface, channel=network_config.channel)
+
     if(not ble_read.scanning):
         thread = Thread(target=ble_read.service, args=())
         thread.start()
@@ -54,8 +56,9 @@ def device_status():
 
 @app.route('/change-channel', methods=['GET'])
 def changeChannel():
+    global airdrop_leak
     channel = request.args.get('channel', '6')
-    airdrop_leak = AirdropLeak(iface=IFACE, channel=channel)
+    airdrop_leak = AirdropLeak(iface=network_config.w_iface, channel=network_config.channel)
     thread = Thread(target=airdrop_leak.run, args=())
     thread.start()
     print("Restarting airdrop...")

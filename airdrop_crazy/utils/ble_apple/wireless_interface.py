@@ -28,6 +28,9 @@ def check_wifi_config(iwdev, channel, verbose=False):
         print(f"Interface {iwdev} not found")
         raise BadInterfaceException
     r = Popen(["airmon-ng", "check", "kill"], stdout=PIPE, stderr=PIPE)
+    # Popen(["ifconfig", iwdev, "down"], stdout=PIPE, stderr=PIPE)
+    # Popen(["iwconfig", iwdev, "mode", "monitor"], stdout=PIPE, stderr=PIPE)
+    # Popen(["ifconfig", iwdev, "up"], stdout=PIPE, stderr=PIPE)
 
     sleep(1)
     owl_result = check_owl_process()

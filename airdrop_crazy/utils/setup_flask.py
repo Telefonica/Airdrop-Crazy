@@ -49,8 +49,8 @@ def _run_ngrok(port):
         url = output["tunnels"][0]["public_url"]
         return url
     except:
-        print("Error configuring Ngrok")
-        raise
+        print("Error configuring Ngrok, your might not have intertet configured")
+        
 
 
 def start_ngrok(port):

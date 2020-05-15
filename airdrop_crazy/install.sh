@@ -1,17 +1,14 @@
 #!/bin/bash
 NGROK_AUTHTOKEN=""
-IFACE=""
 SENTRY_DNS=""
-while getopts ":a:s:i:h" opt; do
+while getopts ":a:s:h" opt; do
       case $opt in
         a ) NGROK_AUTHTOKEN="$OPTARG";;
-        i ) IFACE="$OPTARG";;
         s ) SENTRY_DNS="$OPTARG";;
         h )
             echo "Usage:"
             echo "    deploy.sh -h               Display this help message."
             echo "    deploy.sh -a               Authtoken given for the ngrok service, you must register berfore"
-            echo "    deploy.sh -i               Interface used in the OWL communication"
             echo "    deploy.sh -s               Sentry http crash reporting"
             exit 0
             ;;
@@ -29,12 +26,6 @@ then
     exit 1
 fi
 
-# Check iface
-if [ "$IFACE" == "" ] 
-then
-    echo "Error, you must provide a valid interface"
-    exit 1
-fi
 
 # Check root user
 if [ $EUID -ne 0 ]
@@ -105,9 +96,7 @@ then
     cd ..
 fi
 
-# Change iface
 cd ./src
-sed -i "s/IFACE=\"\"/IFACE=\"$IFACE\"/g" __init__.py
 sed -i "s/SENTRY_DNS=\"\"/SENTRY_DNS=\"$SENTRY_DNS\"/g" __init__.py
 cd ..
 
@@ -131,6 +120,6 @@ echo "Done!"
 
 if [ "$follow" == "y" ]
 then
-    echo -e "To activate virtualenv use: \e[31msource airCrazy/bin/activate\e[0m "
+    echo -e "To activate virtualenv use: \e[32msource airCrazy/bin/activate\e[0m "
     echo "To exit: deactivate"
 fi

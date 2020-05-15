@@ -3,12 +3,11 @@
 ## Prerequisites
 
 * To make this server works you need to install first:
-        * Python3 (https://www.python.org/download/releases/3.0/)
+* Python3 (https://www.python.org/download/releases/3.0/)
 
 ## Installation
 
 * sudo docker-compose up --build
-
 
 ## Deployment
 

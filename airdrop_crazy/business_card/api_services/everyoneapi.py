@@ -13,8 +13,8 @@ class EveryoneApi():
 
             # Form the dictionary with all the queries in the url
             querystring = {
-                "account_sid":"",
-                "auth_token":"",
+                "account_sid":"AC399c07de871346ffb55b751757ac8116",
+                "auth_token":"AU5addaf3ea6c04cdb80e9dea70e2e847a",
                 "data":"name,address,location,cnam,carrier,carrier_o,gender,linetype,image,line_provider,profile"
             }
 
@@ -34,10 +34,10 @@ class EveryoneApi():
                     gender = self.get_gender(response_parsed)
                     return operator, name, gender
                 except Exception as e:
-                    print(f"Error en parseo everyoneapi --> {e}")
+                    print(f"Error in everyoneapi --> {e}")
                     return ("", "", "")
             else:
-                print(f"Error en response everyoneapi --> {response.status_code}")
+                print(f"Error in response everyoneapi --> {response.status_code}")
                 print("")
         return ("", "", "")
     

@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_socketio import SocketIO
+from flask.cli import with_appcontext
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     get_jwt_identity
@@ -8,6 +9,7 @@ from flask_jwt_extended import (
 import logging
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
+from src.network_config import NetworkConfig
 
 SENTRY_DNS=""
 
@@ -16,6 +18,8 @@ sentry_sdk.init(
     integrations=[FlaskIntegration()]
 )
 
+network_config = NetworkConfig()
+
 # Creates the Flask application
 app = Flask(__name__)
 app.config.from_object('config')
@@ -23,9 +27,6 @@ application = app
 socketio = SocketIO(app)
 CORS(app)
 jwt = JWTManager(app)
-# 6, 44, 149
-IFACE=""
-HCI=0
-CHANNEL="6"
+
 
 from src import views

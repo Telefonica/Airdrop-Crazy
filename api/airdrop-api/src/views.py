@@ -16,15 +16,24 @@ def get_results():
     phone = models.Phone.query.filter_by(hash=hash).first()
     result = phone.phone if phone else None
     response = {"phone": str(result)}
-
+    app.logger.info(f"Phone found: {result}")
     return jsonify(
         response
     )
+
+
+
+
 
 @app.route('/api/init', methods=['GET'])
 @jwt_required
 def populate_db():
     country = request.args.get('country', '')
+    challenge = request.args.get('challenge', '')
+    if(challenge != "9asdf89afdakl"):
+        return jsonify(
+                {"error": "Wrong challenge"}
+             )  
     db.create_all()
     if not (models.Phone.query.get(1)):
         try:
@@ -37,6 +46,31 @@ def populate_db():
     return jsonify(
         {"error": "Database already created"}
     )
+
+@app.route('/api/recreate', methods=['GET'])
+@jwt_required
+def recreate():
+    app.logger.info(f"Recreating database")
+    country = request.args.get('country', '')
+    challenge = request.args.get('challenge', '')
+    app.logger.info(f"Challenge: {challenge}")
+    app.logger.info(f"Country selected: {country}")
+    if(challenge != "9asdf89afdakl"):
+        app.logger.error(f"Error in challenge")
+        return jsonify(
+                {"error": "Wrong challenge"}
+             )  
+    try:
+        choose_region(country)
+        return jsonify({"ok": "Number created"})
+    except:
+        return jsonify(
+            {"error": "Generation only supported for US and Spain"}
+            )   
+    return jsonify(
+            {"error": "There was an error"}
+            )         
+
 
 
 def choose_region(region):
@@ -57,8 +91,12 @@ def generate_number(number):
     """
     hash = hashlib.sha256(number.encode()).hexdigest()
     phone = Phone(hash=hash, phone=number)
-    db.session.add(phone)
-    db.session.commit()
+    try:
+        db.session.add(phone)
+        db.session.commit()
+    except:
+        app.logger.error(f"Error in database, rollback session")
+        db.session.rollback()
 
 
 def generate_hashes_us():
@@ -72,7 +110,7 @@ def generate_hashes_us():
     567, 614, 740, 937, 405, 539, 580, 918, 215, 223, 267, 272, 412, 445, 484, 570, 610, 717, 724, 814, 878, 458, 503, 541, 971, 401, 803, 843, 854, 864, 605, 423, 615, 629, 731, 865, 901, 931, 210, 214, 254, 281, 325, 346, 361, 409, 
     430, 432, 469, 512, 682, 713, 726, 737, 806, 817, 830, 832, 903, 915, 936, 940, 956, 972, 979, 385, 435, 801, 802, 276, 434, 540, 571, 703, 757, 804, 206, 253, 360, 425, 509, 564, 202, 262, 414, 534, 608, 715, 920, 304, 681, 307, 
     684, 671, 670, 787, 939, 340]
-    for prefix in list_numbers:
+    for prefix in reversed(list_numbers):
         for number in range (0000000, 9999999):
             number = f"1{prefix}{number:07d}"
             generate_number(number)
